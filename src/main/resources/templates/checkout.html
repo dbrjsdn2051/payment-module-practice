@@ -11,7 +11,16 @@
     var tossPayments = TossPayments(clientKey);
 
     // 매번 새로운 주문번호 생성
-    var orderId = 'ORDER_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    // var orderId = 'ORDER_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+
+    /*<![CDATA[*/
+    const orderId = "[[${orderId}]]"
+    const orderName = "[[${orderName}]]"
+    const amount = [[${amount}]]
+    /*]]>*/
+    console.log("orderId : " + orderId)
+    console.log("orderName : " + orderName)
+    console.log("amount : " + amount)
 
     // ------ 결제창 띄우기 ------
     tossPayments

@@ -2,7 +2,7 @@ package com.example.tosspayment.payment.domain
 
 import com.example.tosspayment.payment.adapter.out.persistence.PaymentMethod
 import com.example.tosspayment.payment.adapter.out.persistence.PaymentType
-import kotlinx.datetime.LocalDateTime
+import java.time.LocalDateTime
 
 data class PaymentEvent(
     val id: Long? = null,

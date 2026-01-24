@@ -2,9 +2,10 @@ package com.example.tosspayment.payment.adapter.out.persistence
 
 import com.example.tosspayment.payment.domain.PaymentEvent
 import kotlinx.coroutines.flow.single
+import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.r2dbc.R2dbcDatabase
 import org.jetbrains.exposed.v1.r2dbc.insert
-import org.jetbrains.exposed.v1.r2dbc.insertReturning
+import org.jetbrains.exposed.v1.r2dbc.select
 import org.jetbrains.exposed.v1.r2dbc.transactions.suspendTransaction
 import org.springframework.stereotype.Repository
 
@@ -15,7 +16,7 @@ class R2DBCPaymentRepository(
 
     override suspend fun save(paymentEvent: PaymentEvent): Long {
         return suspendTransaction(db = database) {
-            val result = PaymentEvents.insertReturning(listOf(PaymentEvents.id)) {
+            PaymentEvents.insert {
                 it[buyerId] = paymentEvent.buyerId
                 it[orderId] = paymentEvent.orderId
                 it[type] = paymentEvent.paymentType ?: PaymentType.NORMAL
@@ -24,7 +25,10 @@ class R2DBCPaymentRepository(
                 it[isPaymentDone] = false
             }
 
-            val eventId = result.single()[PaymentEvents.id]
+            val eventId = PaymentEvents
+                .select(PaymentEvents.id)
+                .where(PaymentEvents.orderId eq paymentEvent.orderId)
+                .single()[PaymentEvents.id]
 
             paymentEvent.paymentOrders.forEach { order ->
                 PaymentOrders.insert {
