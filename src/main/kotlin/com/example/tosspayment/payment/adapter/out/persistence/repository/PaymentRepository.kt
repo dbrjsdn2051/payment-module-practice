@@ -1,4 +1,4 @@
-package com.example.tosspayment.payment.adapter.out.persistence
+package com.example.tosspayment.payment.adapter.out.persistence.repository
 
 import com.example.tosspayment.payment.domain.PaymentEvent
 

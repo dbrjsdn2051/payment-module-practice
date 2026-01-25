@@ -2,7 +2,7 @@ package com.example.tosspayment.payment.adapter.out.web.executor
 
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
-import reactor.core.publisher.Mono
+import org.springframework.web.reactive.function.client.awaitBody
 
 @Component
 class TossPaymentExecutor(
@@ -10,7 +10,7 @@ class TossPaymentExecutor(
     private val uri: String = "/v1/payments/confirm"
 ) {
 
-    fun execute(paymentKey: String, orderId: String, amount: String): Mono<String> {
+    suspend fun execute(paymentKey: String, orderId: String, amount: String): String {
         return tossPaymentWebClient.post()
             .uri(uri)
             .bodyValue(
@@ -23,6 +23,6 @@ class TossPaymentExecutor(
             """.trimIndent()
             )
             .retrieve()
-            .bodyToMono(String::class.java)
+            .awaitBody()
     }
 }

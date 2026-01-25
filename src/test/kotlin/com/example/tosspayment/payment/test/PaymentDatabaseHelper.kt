@@ -1,11 +1,10 @@
 package com.example.paymentservice2.payment.test
 
 import com.example.tosspayment.payment.domain.PaymentEvent
-import reactor.core.publisher.Mono
 
 interface PaymentDatabaseHelper {
 
   fun getPayments(orderId: String): PaymentEvent?
 
-  fun clean(): Mono<Void>
+  suspend fun clean()
 }
