@@ -4,11 +4,23 @@ import org.jetbrains.exposed.v1.core.Table
 import org.jetbrains.exposed.v1.datetime.datetime
 
 enum class PaymentType(description: String) {
-    NORMAL("일반 결제")
+    NORMAL("일반 결제");
+
+    companion object {
+        fun get(type: String): PaymentType {
+            return entries.find { it.name == type } ?: error("PaymentType (type: $type) 은 올바르지 않은 결제 타입입니다.")
+        }
+    }
 }
 
-enum class PaymentMethod(description: String) {
-    EASY_PAY("간편 결제")
+enum class PaymentMethod(val method: String) {
+    EASY_PAY("간편결제");
+
+    companion object {
+        fun get(method: String): PaymentMethod {
+            return entries.find { it.method == method } ?: error("Payment Method (method: $method) 는 올바르지 않은 결제 방법입니다.")
+        }
+    }
 }
 
 enum class PaymentStatus(description: String) {
@@ -46,8 +58,8 @@ object PaymentOrders : Table("payment_orders") {
         .default(PaymentStatus.NOT_STARTED)
     val ledgerUpdated = bool("ledger_updated").default(false)
     val walletUpdated = bool("wallet_updated").default(false)
-    val failedCount = byte("failed_count").default(0)
-    val threshold = byte("threshold").default(5)
+    val failedCount = integer("failed_count").default(0)
+    val threshold = integer("threshold").default(5)
     val createdAt = datetime("created_at")
     val updatedAt = datetime("updated_at")
 

@@ -4,6 +4,7 @@ import com.example.tosspayment.common.PersistentAdapter
 import com.example.tosspayment.payment.adapter.out.persistence.repository.PaymentRepository
 import com.example.tosspayment.payment.adapter.out.persistence.repository.PaymentStatusUpdateRepository
 import com.example.tosspayment.payment.adapter.out.persistence.repository.PaymentValidationRepository
+import com.example.tosspayment.payment.application.port.`in`.PaymentStatusUpdateCommand
 import com.example.tosspayment.payment.application.port.out.PaymentStatusUpdatePort
 import com.example.tosspayment.payment.application.port.out.PaymentValidationPort
 import com.example.tosspayment.payment.application.port.out.SavePaymentPort
@@ -29,5 +30,9 @@ class PaymentPersistentAdapter(
 
     override suspend fun isValid(orderId: String, amount: Long) {
         paymentValidationRepository.isValid(orderId, amount)
+    }
+
+    override suspend fun updatePaymentStatus(command: PaymentStatusUpdateCommand): Boolean {
+        return paymentStatusUpdateRepository.updatePaymentStatus(command)
     }
 }

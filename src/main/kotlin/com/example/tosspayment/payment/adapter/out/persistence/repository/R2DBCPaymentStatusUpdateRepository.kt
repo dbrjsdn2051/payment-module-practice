@@ -5,8 +5,9 @@ import com.example.tosspayment.payment.adapter.out.persistence.PaymentOrderHisto
 import com.example.tosspayment.payment.adapter.out.persistence.PaymentOrders
 import com.example.tosspayment.payment.adapter.out.persistence.PaymentStatus
 import com.example.tosspayment.payment.adapter.out.persistence.exception.PaymentAlreadyProcessedException
+import com.example.tosspayment.payment.application.port.`in`.PaymentStatusUpdateCommand
 import kotlinx.coroutines.flow.toList
-import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.*
 import org.jetbrains.exposed.v1.r2dbc.R2dbcDatabase
 import org.jetbrains.exposed.v1.r2dbc.batchInsert
 import org.jetbrains.exposed.v1.r2dbc.select
@@ -62,12 +63,14 @@ class R2DBCPaymentStatusUpdateRepository(
                     message = "이미 처리 성공한 결제입니다.",
                     status = PaymentStatus.SUCCESS
                 )
+
                 PaymentStatus.FAILURE -> throw PaymentAlreadyProcessedException(
                     message = "이미 처리 실패한 결제입니다.",
                     status = PaymentStatus.FAILURE
                 )
                 // NOT_STARTED, UNKNOWN, EXECUTING은 계속 진행
-                else -> { /* 진행 가능 */ }
+                else -> { /* 진행 가능 */
+                }
             }
         }
 
@@ -122,6 +125,92 @@ class R2DBCPaymentStatusUpdateRepository(
     private suspend fun updatePaymentKey(orderId: String, paymentKey: String): Int {
         return PaymentEvents.update({ PaymentEvents.orderId eq orderId }) {
             it[PaymentEvents.paymentKey] = paymentKey
+        }
+    }
+
+    /**
+     * 결제 상태 업데이트 (SUCCESS, FAILURE, UNKNOWN)
+     */
+    override suspend fun updatePaymentStatus(command: PaymentStatusUpdateCommand): Boolean {
+        when (command.status) {
+            PaymentStatus.SUCCESS -> updatePaymentStatusToSuccess(command)
+            PaymentStatus.FAILURE -> updatePaymentStatusToFailure(command)
+            PaymentStatus.UNKNOWN -> updatePaymentStatusToUnknown(command)
+            else -> error("결제 상태 (status: ${command.status}) 는 올바르지 않은 결제 상태입니다.")
+        }
+        return true
+    }
+
+    /**
+     * 결제 성공 상태로 업데이트
+     */
+    private suspend fun updatePaymentStatusToSuccess(command: PaymentStatusUpdateCommand) {
+        suspendTransaction(db = database) {
+            // 1. 이전 상태 조회
+            val previousStatus = selectPaymentOrderStatus(command.orderId)
+
+            // 2. 히스토리 저장
+            insertPaymentHistory(previousStatus, PaymentStatus.SUCCESS, "PAYMENT_CONFIRMATION_DONE")
+
+            // 3. 결제 주문 상태 업데이트
+            updatePaymentOrderStatus(command.orderId, PaymentStatus.SUCCESS)
+
+            // 4. PaymentEvent에 성공 정보 업데이트
+            val extraDetails = command.extraDetails!!
+            PaymentEvents.update({ PaymentEvents.orderId eq command.orderId }) {
+                it[isPaymentDone] = true
+                it[method] = extraDetails.method
+                it[pspRawData] = extraDetails.pspRawData
+                it[approvedAt] = extraDetails.approvedAt
+                it[updatedAt] = LocalDateTime.now().toKotlinLocalDateTime()
+            }
+        }
+    }
+
+    /**
+     * 결제 실패 상태로 업데이트
+     */
+    private suspend fun updatePaymentStatusToFailure(command: PaymentStatusUpdateCommand) {
+        suspendTransaction(db = database) {
+            // 1. 이전 상태 조회
+            val previousStatus = selectPaymentOrderStatus(command.orderId)
+
+            // 2. 히스토리 저장
+            insertPaymentHistory(previousStatus, PaymentStatus.FAILURE, "PAYMENT_CONFIRMATION_FAILED")
+
+            // 3. 결제 주문 상태 업데이트
+            updatePaymentOrderStatus(command.orderId, PaymentStatus.FAILURE)
+
+            // 4. 실패 횟수 증가
+            incrementFailedCount(command.orderId)
+        }
+    }
+
+    /**
+     * 결제 알 수 없는 상태로 업데이트
+     */
+    private suspend fun updatePaymentStatusToUnknown(command: PaymentStatusUpdateCommand) {
+        suspendTransaction(db = database) {
+            // 1. 이전 상태 조회
+            val previousStatus = selectPaymentOrderStatus(command.orderId)
+
+            // 2. 히스토리 저장
+            insertPaymentHistory(previousStatus, PaymentStatus.UNKNOWN, "PAYMENT_CONFIRMATION_UNKNOWN")
+
+            // 3. 결제 주문 상태 업데이트
+            updatePaymentOrderStatus(command.orderId, PaymentStatus.UNKNOWN)
+
+            // 4. 실패 횟수 증가 (재시도 대상이므로)
+            incrementFailedCount(command.orderId)
+        }
+    }
+
+    /**
+     * 실패 횟수 증가
+     */
+    private suspend fun incrementFailedCount(orderId: String): Int {
+        return PaymentOrders.update({ PaymentOrders.orderId eq orderId }) {
+            it[failedCount] = failedCount + 1
         }
     }
 }
