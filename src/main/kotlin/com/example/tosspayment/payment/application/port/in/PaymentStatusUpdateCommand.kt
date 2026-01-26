@@ -1,6 +1,7 @@
 package com.example.tosspayment.payment.application.port.`in`
 
 import com.example.tosspayment.payment.adapter.out.persistence.PaymentStatus
+import com.example.tosspayment.payment.domain.PaymentExecutionResult
 import com.example.tosspayment.payment.domain.PaymentFailure
 import com.example.tosspayment.payment.domain.PaymentExtraDetails
 
@@ -11,6 +12,14 @@ data class PaymentStatusUpdateCommand (
     val extraDetails: PaymentExtraDetails? = null,
     val failure: PaymentFailure? = null,
 ){
+
+    constructor(paymentExecutionResult: PaymentExecutionResult) : this(
+        paymentKey = paymentExecutionResult.paymentKey,
+        orderId = paymentExecutionResult.orderId,
+        status = paymentExecutionResult.paymentStatus(),
+        extraDetails = paymentExecutionResult.extraDetails,
+        failure = paymentExecutionResult.failure
+    )
 
     init {
         require(status == PaymentStatus.SUCCESS || status == PaymentStatus.FAILURE || status == PaymentStatus.UNKNOWN) {

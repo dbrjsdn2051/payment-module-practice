@@ -1,4 +1,4 @@
-package com.example.paymentservice2.payment.test
+package com.example.tosspayment.payment.test
 
 import com.example.tosspayment.payment.domain.PaymentEvent
 
