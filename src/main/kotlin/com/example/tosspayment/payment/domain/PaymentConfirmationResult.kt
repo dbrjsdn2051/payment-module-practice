@@ -4,7 +4,7 @@ import com.example.tosspayment.payment.adapter.out.persistence.PaymentStatus
 
 data class PaymentConfirmationResult (
     val status: PaymentStatus,
-    val failure: PaymentExecutionFailure? = null
+    val failure: PaymentFailure? = null
 ){
 
     init{

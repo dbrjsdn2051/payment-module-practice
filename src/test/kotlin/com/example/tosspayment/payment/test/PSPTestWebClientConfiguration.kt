@@ -1,4 +1,4 @@
-package com.example.paymentservice2.payment.test
+package com.example.tosspayment.payment.test
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.TestConfiguration

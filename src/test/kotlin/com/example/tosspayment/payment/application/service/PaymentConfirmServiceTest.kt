@@ -9,7 +9,7 @@ import com.example.tosspayment.payment.application.port.out.PaymentExecutorPort
 import com.example.tosspayment.payment.application.port.out.PaymentStatusUpdatePort
 import com.example.tosspayment.payment.application.port.out.PaymentValidationPort
 import com.example.tosspayment.payment.domain.PSPConfirmationStatus
-import com.example.tosspayment.payment.domain.PaymentExecutionFailure
+import com.example.tosspayment.payment.domain.PaymentFailure
 import com.example.tosspayment.payment.domain.PaymentExecutionResult
 import com.example.tosspayment.payment.domain.PaymentExtraDetails
 import io.mockk.coEvery
@@ -251,14 +251,9 @@ class PaymentConfirmServiceTest {
             paymentKey = paymentKey,
             orderId = orderId,
             extraDetails = null,
-            failure = PaymentExecutionFailure(
-                type = PaymentType.NORMAL,
-                method = PaymentMethod.EASY_PAY,
-                approvedAt = LocalDateTime.now().toKotlinLocalDateTime(),
-                orderName = "test_order_name",
-                pspConfirmationStatus = PSPConfirmationStatus.ABORTED,
-                totalAmount = 10000L,
-                pspRawData = "{}"
+            failure = PaymentFailure(
+                errorCode = "REJECT_CARD_COMPANY",
+                message = "카드사에서 결제를 거절했습니다."
             ),
             isSuccess = false,
             isFailure = true,

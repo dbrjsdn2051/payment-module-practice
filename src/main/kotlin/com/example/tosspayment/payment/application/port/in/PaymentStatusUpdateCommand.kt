@@ -1,7 +1,7 @@
 package com.example.tosspayment.payment.application.port.`in`
 
 import com.example.tosspayment.payment.adapter.out.persistence.PaymentStatus
-import com.example.tosspayment.payment.domain.PaymentExecutionFailure
+import com.example.tosspayment.payment.domain.PaymentFailure
 import com.example.tosspayment.payment.domain.PaymentExtraDetails
 
 data class PaymentStatusUpdateCommand (
@@ -9,7 +9,7 @@ data class PaymentStatusUpdateCommand (
     val orderId: String,
     val status: PaymentStatus,
     val extraDetails: PaymentExtraDetails? = null,
-    val failure: PaymentExecutionFailure? = null,
+    val failure: PaymentFailure? = null,
 ){
 
     init {

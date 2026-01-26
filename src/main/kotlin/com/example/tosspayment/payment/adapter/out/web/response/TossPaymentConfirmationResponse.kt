@@ -49,7 +49,7 @@ data class TossPaymentConfirmationResponse(
     val cancels: List<Cancel>? = null,
 
     // 실패 정보
-    val failure: Failure? = null,
+    val tossFailureResponse: TossFailureResponse? = null,
 
     // 기타 필드
     val mId: String? = null,
@@ -156,7 +156,7 @@ data class TossPaymentConfirmationResponse(
     )
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    data class Failure(
+    data class TossFailureResponse(
         val code: String?,
         val message: String?
     )
