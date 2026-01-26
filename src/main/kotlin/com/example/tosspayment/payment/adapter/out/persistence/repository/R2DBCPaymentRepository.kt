@@ -1,9 +1,9 @@
 package com.example.tosspayment.payment.adapter.out.persistence.repository
 
-import com.example.tosspayment.payment.adapter.out.persistence.PaymentEvents
-import com.example.tosspayment.payment.adapter.out.persistence.PaymentOrders
-import com.example.tosspayment.payment.adapter.out.persistence.PaymentStatus
-import com.example.tosspayment.payment.adapter.out.persistence.PaymentType
+import com.example.tosspayment.payment.domain.PaymentEvents
+import com.example.tosspayment.payment.domain.PaymentOrders
+import com.example.tosspayment.payment.domain.PaymentStatus
+import com.example.tosspayment.payment.domain.PaymentType
 import com.example.tosspayment.payment.domain.PaymentEvent
 import com.example.tosspayment.payment.domain.PendingPaymentEvent
 import com.example.tosspayment.payment.domain.PendingPaymentOrder

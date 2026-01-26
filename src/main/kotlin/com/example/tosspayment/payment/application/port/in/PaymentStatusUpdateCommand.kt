@@ -1,6 +1,6 @@
 package com.example.tosspayment.payment.application.port.`in`
 
-import com.example.tosspayment.payment.adapter.out.persistence.PaymentStatus
+import com.example.tosspayment.payment.domain.PaymentStatus
 import com.example.tosspayment.payment.domain.PaymentExecutionResult
 import com.example.tosspayment.payment.domain.PaymentFailure
 import com.example.tosspayment.payment.domain.PaymentExtraDetails

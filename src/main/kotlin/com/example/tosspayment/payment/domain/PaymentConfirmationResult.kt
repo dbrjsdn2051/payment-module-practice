@@ -1,7 +1,5 @@
 package com.example.tosspayment.payment.domain
 
-import com.example.tosspayment.payment.adapter.out.persistence.PaymentStatus
-
 data class PaymentConfirmationResult (
     val status: PaymentStatus,
     val failure: PaymentFailure? = null

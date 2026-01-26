@@ -1,7 +1,9 @@
-package com.example.tosspayment.payment.adapter.out.persistence
+package com.example.tosspayment.payment.domain
 
+import kotlinx.datetime.toKotlinLocalDateTime
 import org.jetbrains.exposed.v1.core.Table
 import org.jetbrains.exposed.v1.datetime.datetime
+import java.time.LocalDateTime
 
 enum class PaymentType(description: String) {
     NORMAL("일반 결제");
@@ -21,6 +23,10 @@ enum class PaymentMethod(val method: String) {
             return entries.find { it.method == method } ?: error("Payment Method (method: $method) 는 올바르지 않은 결제 방법입니다.")
         }
     }
+}
+
+enum class Status {
+    INIT, FAILURE, SUCCESS
 }
 
 enum class PaymentStatus(description: String) {
@@ -74,6 +80,20 @@ object PaymentOrderHistories : Table("payment_order_histories") {
     val createdAt = datetime("created_at")
     val changedBy = varchar("changed_by", 255).nullable()
     val reason = varchar("reason", 255).nullable()
+
+    override val primaryKey = PrimaryKey(id)
+}
+
+object Outboxes : Table("outboxes") {
+    val id = long("id").autoIncrement()
+    val idempotencyKey = varchar("idempotency_key", 255).uniqueIndex()
+    val status = enumerationByName<Status>("status", 20).default(Status.INIT)
+    val type = varchar("type", 40).nullable()
+    val partitionKey = integer("partition_key").default(0)
+    val payload = text("payload").nullable()
+    val metadata = text("metadata").nullable()
+    val createdAt = datetime("created_at").default(LocalDateTime.now().toKotlinLocalDateTime())
+    val updatedAt = datetime("updated_at").default(LocalDateTime.now().toKotlinLocalDateTime())
 
     override val primaryKey = PrimaryKey(id)
 }

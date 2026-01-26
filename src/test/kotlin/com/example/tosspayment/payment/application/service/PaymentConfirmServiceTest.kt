@@ -1,8 +1,8 @@
 package com.example.tosspayment.payment.application.service
 
-import com.example.tosspayment.payment.adapter.out.persistence.PaymentMethod
-import com.example.tosspayment.payment.adapter.out.persistence.PaymentStatus
-import com.example.tosspayment.payment.adapter.out.persistence.PaymentType
+import com.example.tosspayment.payment.domain.PaymentMethod
+import com.example.tosspayment.payment.domain.PaymentStatus
+import com.example.tosspayment.payment.domain.PaymentType
 import com.example.tosspayment.payment.application.port.`in`.PaymentConfirmCommand
 import com.example.tosspayment.payment.application.port.`in`.PaymentStatusUpdateCommand
 import com.example.tosspayment.payment.application.port.out.PaymentExecutorPort

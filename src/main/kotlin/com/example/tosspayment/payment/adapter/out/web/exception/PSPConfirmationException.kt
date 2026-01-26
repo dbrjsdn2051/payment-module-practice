@@ -1,6 +1,6 @@
 package com.example.tosspayment.payment.adapter.out.web.exception
 
-import com.example.tosspayment.payment.adapter.out.persistence.PaymentStatus
+import com.example.tosspayment.payment.domain.PaymentStatus
 
 class PSPConfirmationException(
     val errorCode: String,

@@ -1,6 +1,6 @@
 package com.example.tosspayment.payment.adapter.out.persistence.repository
 
-import com.example.tosspayment.payment.adapter.out.persistence.PaymentOrders
+import com.example.tosspayment.payment.domain.PaymentOrders
 import com.example.tosspayment.payment.adapter.out.persistence.exception.PaymentValidationException
 import kotlinx.coroutines.flow.single
 import org.jetbrains.exposed.v1.core.eq

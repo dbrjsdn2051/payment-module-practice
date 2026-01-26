@@ -1,6 +1,5 @@
 package com.example.tosspayment.payment.domain
 
-import com.example.tosspayment.payment.adapter.out.persistence.PaymentStatus
 import java.math.BigDecimal
 
 data class PaymentOrder(

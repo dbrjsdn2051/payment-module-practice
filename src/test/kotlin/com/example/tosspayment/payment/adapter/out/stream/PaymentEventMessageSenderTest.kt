@@ -1,83 +1,43 @@
-//package com.example.paymentservice2.payment.adapter.out.stream
-//
-//import com.example.paymentservice2.payment.domain.PaymentEventMessage
-//import com.example.paymentservice2.payment.domain.PaymentEventMessageType
-//import org.junit.jupiter.api.Assertions.*
-//import org.junit.jupiter.api.Tag
-//import org.junit.jupiter.api.Test
-//import org.springframework.beans.factory.annotation.Autowired
-//import org.springframework.boot.test.context.SpringBootTest
-//import java.util.UUID
-//
-//@SpringBootTest
-//@Tag("ExternalIntegration")
-//class PaymentEventMessageSenderTest (
-//  @Autowired private val paymentEventMessageSender: PaymentEventMessageSender
-//) {
-//
-//
-//  @Test
-//  fun `should send eventMessage by using partitionKey`() {
-//    val paymentEventMessages = listOf(
-//      PaymentEventMessage(
-//        type = PaymentEventMessageType.PAYMENT_CONFIRMATION_SUCCESS,
-//        payload = mapOf(
-//          "orderId" to UUID.randomUUID().toString()
-//        ),
-//        metadata = mapOf(
-//          "partitionKey" to 0
-//        )
-//      ),
-//      PaymentEventMessage(
-//        type = PaymentEventMessageType.PAYMENT_CONFIRMATION_SUCCESS,
-//        payload = mapOf(
-//          "orderId" to UUID.randomUUID().toString()
-//        ),
-//        metadata = mapOf(
-//          "partitionKey" to 1
-//        )
-//      ),
-//      PaymentEventMessage(
-//        type = PaymentEventMessageType.PAYMENT_CONFIRMATION_SUCCESS,
-//        payload = mapOf(
-//          "orderId" to UUID.randomUUID().toString()
-//        ),
-//        metadata = mapOf(
-//          "partitionKey" to 2
-//        )
-//      ),
-//      PaymentEventMessage(
-//        type = PaymentEventMessageType.PAYMENT_CONFIRMATION_SUCCESS,
-//        payload = mapOf(
-//          "orderId" to UUID.randomUUID().toString()
-//        ),
-//        metadata = mapOf(
-//          "partitionKey" to 3
-//        )
-//      ),
-//      PaymentEventMessage(
-//        type = PaymentEventMessageType.PAYMENT_CONFIRMATION_SUCCESS,
-//        payload = mapOf(
-//          "orderId" to UUID.randomUUID().toString()
-//        ),
-//        metadata = mapOf(
-//          "partitionKey" to 4
-//        )
-//      ), PaymentEventMessage(
-//        type = PaymentEventMessageType.PAYMENT_CONFIRMATION_SUCCESS,
-//        payload = mapOf(
-//          "orderId" to UUID.randomUUID().toString()
-//        ),
-//        metadata = mapOf(
-//          "partitionKey" to 5
-//        )
-//      )
-//    )
-//
-//    paymentEventMessages.forEach {
-//      paymentEventMessageSender.dispatch(it)
-//    }
-//
-//    Thread.sleep(10000)
-//  }
-//}
+package com.example.tosspayment.payment.adapter.out.stream
+
+import com.example.tosspayment.payment.domain.PaymentEventMessage
+import com.example.tosspayment.payment.domain.PaymentEventMessageType
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.kafka.test.context.EmbeddedKafka
+import org.springframework.test.context.TestPropertySource
+import java.util.UUID
+
+@SpringBootTest
+@Tag("ExternalIntegration")
+@EmbeddedKafka(
+    partitions = 6,
+    topics = ["payment"]
+)
+@TestPropertySource(properties = [
+    "spring.kafka.bootstrap-servers=\${spring.embedded.kafka.brokers}",
+    "spring.cloud.stream.kafka.binder.brokers=\${spring.embedded.kafka.brokers}"
+])
+class PaymentEventMessageSenderTest(
+    @Autowired private val paymentEventMessageSender: PaymentEventMessageSender
+) {
+
+    @Test
+    fun `should send eventMessage by using partitionKey`() {
+        val paymentEventMessages = (0..5).map { partitionKey ->
+            PaymentEventMessage(
+                type = PaymentEventMessageType.PAYMENT_CONFIRMATION_SUCCESS,
+                payload = mapOf("orderId" to UUID.randomUUID().toString()),
+                metadata = mapOf("partitionKey" to partitionKey)
+            )
+        }
+
+        paymentEventMessages.forEach {
+            paymentEventMessageSender.dispatch(it)
+        }
+
+        Thread.sleep(5000)
+    }
+}

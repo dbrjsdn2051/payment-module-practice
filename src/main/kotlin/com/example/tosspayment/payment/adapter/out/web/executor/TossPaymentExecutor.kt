@@ -1,7 +1,7 @@
 package com.example.tosspayment.payment.adapter.out.web.executor
 
-import com.example.tosspayment.payment.adapter.out.persistence.PaymentMethod
-import com.example.tosspayment.payment.adapter.out.persistence.PaymentType
+import com.example.tosspayment.payment.domain.PaymentMethod
+import com.example.tosspayment.payment.domain.PaymentType
 import com.example.tosspayment.payment.adapter.out.web.exception.PSPConfirmationException
 import com.example.tosspayment.payment.adapter.out.web.exception.TossPaymentError
 import com.example.tosspayment.payment.adapter.out.web.response.TossPaymentConfirmationResponse

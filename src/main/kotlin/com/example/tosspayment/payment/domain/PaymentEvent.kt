@@ -1,7 +1,5 @@
 package com.example.tosspayment.payment.domain
 
-import com.example.tosspayment.payment.adapter.out.persistence.PaymentMethod
-import com.example.tosspayment.payment.adapter.out.persistence.PaymentType
 import java.time.LocalDateTime
 
 data class PaymentEvent(

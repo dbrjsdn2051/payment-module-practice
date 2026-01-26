@@ -1,11 +1,12 @@
 package com.example.tosspayment.payment.adapter.out.persistence.repository
 
-import com.example.tosspayment.payment.adapter.out.persistence.PaymentEvents
-import com.example.tosspayment.payment.adapter.out.persistence.PaymentOrderHistories
-import com.example.tosspayment.payment.adapter.out.persistence.PaymentOrders
-import com.example.tosspayment.payment.adapter.out.persistence.PaymentStatus
+import com.example.tosspayment.payment.domain.PaymentEvents
+import com.example.tosspayment.payment.domain.PaymentOrderHistories
+import com.example.tosspayment.payment.domain.PaymentOrders
+import com.example.tosspayment.payment.domain.PaymentStatus
 import com.example.tosspayment.payment.adapter.out.persistence.exception.PaymentAlreadyProcessedException
 import com.example.tosspayment.payment.application.port.`in`.PaymentStatusUpdateCommand
+import com.example.tosspayment.payment.domain.PaymentEventMessagePublisher
 import kotlinx.coroutines.flow.toList
 import org.jetbrains.exposed.v1.core.*
 import org.jetbrains.exposed.v1.r2dbc.R2dbcDatabase
@@ -19,7 +20,9 @@ import java.time.LocalDateTime
 
 @Repository
 class R2DBCPaymentStatusUpdateRepository(
-    private val database: R2dbcDatabase
+    private val database: R2dbcDatabase,
+    private val paymentOutboxRepository: PaymentOutboxRepository,
+    private val paymentEventMessagePublisher: PaymentEventMessagePublisher
 ) : PaymentStatusUpdateRepository {
 
     /**
@@ -164,6 +167,10 @@ class R2DBCPaymentStatusUpdateRepository(
                 it[approvedAt] = extraDetails.approvedAt
                 it[updatedAt] = LocalDateTime.now().toKotlinLocalDateTime()
             }
+
+            // 5. transaction outbox insert
+            val paymentEventMessage = paymentOutboxRepository.insertOutbox(command)
+            paymentEventMessagePublisher.publishEvent(paymentEventMessage)
         }
     }
 

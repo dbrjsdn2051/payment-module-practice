@@ -45,7 +45,17 @@ CREATE TABLE payment_order_histories
     foreign key (payment_order_id) references payment_orders (id)
 );
 
-
+CREATE TABLE outboxes (
+    id bigint auto_increment primary key,
+    idempotency_key varchar(255) unique not null,
+    status enum ('INIT', 'FAILURE', 'SUCCESS') default 'INIT',
+    type varchar(40),
+    partition_key int default 0,
+    payload json,
+    metadata json,
+    created_at datetime not null default current_timestamp,
+    updated_at datetime not null default current_timestamp
+);
 
 
 

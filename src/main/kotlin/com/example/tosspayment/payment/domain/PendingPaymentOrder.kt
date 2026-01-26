@@ -1,7 +1,5 @@
 package com.example.tosspayment.payment.domain
 
-import com.example.tosspayment.payment.adapter.out.persistence.PaymentStatus
-
 data class PendingPaymentOrder(
     val paymentOrderId: Long,
     val status: PaymentStatus,

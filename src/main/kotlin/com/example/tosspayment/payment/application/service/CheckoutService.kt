@@ -1,7 +1,7 @@
 package com.example.tosspayment.payment.application.service
 
 import com.example.tosspayment.common.UseCase
-import com.example.tosspayment.payment.adapter.out.persistence.PaymentStatus
+import com.example.tosspayment.payment.domain.PaymentStatus
 import com.example.tosspayment.payment.application.port.`in`.CheckoutCommand
 import com.example.tosspayment.payment.application.port.`in`.CheckoutUseCase
 import com.example.tosspayment.payment.application.port.out.LoadProductPort

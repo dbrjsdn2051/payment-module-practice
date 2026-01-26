@@ -1,8 +1,8 @@
 package com.example.tosspayment.payment.application.service
 
-import com.example.tosspayment.payment.adapter.out.persistence.PaymentMethod
-import com.example.tosspayment.payment.adapter.out.persistence.PaymentStatus
-import com.example.tosspayment.payment.adapter.out.persistence.PaymentType
+import com.example.tosspayment.payment.domain.PaymentMethod
+import com.example.tosspayment.payment.domain.PaymentStatus
+import com.example.tosspayment.payment.domain.PaymentType
 import com.example.tosspayment.payment.adapter.out.web.exception.PSPConfirmationException
 import com.example.tosspayment.payment.application.port.`in`.CheckoutCommand
 import com.example.tosspayment.payment.application.port.`in`.CheckoutUseCase
@@ -24,6 +24,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.toKotlinLocalDateTime
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -32,6 +33,7 @@ import java.time.LocalDateTime
 import java.util.*
 
 @SpringBootTest
+@Tag("ExternalIntegration")
 @Import(PaymentTestConfiguration::class)
 class PaymentRecoveryServiceTest(
     @Autowired private val loadPendingPaymentPort: LoadPendingPaymentPort,
